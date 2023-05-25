@@ -45,6 +45,24 @@ namespace OOPEWC
                     return 0; // Absent, no working hours
             }
         }
+
+        public int CalculateMonthlyWage()
+        {
+            int monthlyWage = 0;
+            int workingDays = 0;
+
+            for (int day = 1; day <= 20; day++)
+            {
+                Employee employee = new Employee();
+                if (employee.IsPresent())
+                {
+                    workingDays++;
+                    monthlyWage += employee.CalculateDailyWage();
+                }
+            }
+
+            return monthlyWage;
+        }
     }
 
     internal class Program
@@ -67,6 +85,9 @@ namespace OOPEWC
                         Console.WriteLine($"Full-Time Employee. Daily Wage: {dailyWage}");
                         break;
                 }
+
+                int monthlyWage = employee.CalculateMonthlyWage();
+                Console.WriteLine($"Monthly Wage: {monthlyWage}");
             }
             else
             {
