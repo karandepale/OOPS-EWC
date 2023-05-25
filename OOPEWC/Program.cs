@@ -35,17 +35,14 @@ namespace OOPEWC
 
         private int CalculateWorkingHours(bool isPartTime, Random random)
         {
-            if (isPartTime)
+            switch (isPartTime)
             {
-                return 8; // Assuming part-time hours are 8
-            }
-            else if (isPresent)
-            {
-                return random.Next(1, 9); // If full-time, generate a random working hour between 1 and 8
-            }
-            else
-            {
-                return 0; // Absent, no working hours
+                case true:
+                    return 8; // Assuming part-time hours are 8
+                case false when isPresent:
+                    return random.Next(1, 9); // If full-time, generate a random working hour between 1 and 8
+                default:
+                    return 0; // Absent, no working hours
             }
         }
     }
@@ -59,15 +56,16 @@ namespace OOPEWC
             if (employee.IsPresent())
             {
                 int dailyWage = employee.CalculateDailyWage();
-                Console.WriteLine($"Employee is Present.");
+                Console.WriteLine("Employee is Present.");
 
-                if (employee.IsPartTime())
+                switch (employee.IsPartTime())
                 {
-                    Console.WriteLine($"Part-Time Employee. Daily Wage: {dailyWage}");
-                }
-                else
-                {
-                    Console.WriteLine($"Full-Time Employee. Daily Wage: {dailyWage}");
+                    case true:
+                        Console.WriteLine($"Part-Time Employee. Daily Wage: {dailyWage}");
+                        break;
+                    case false:
+                        Console.WriteLine($"Full-Time Employee. Daily Wage: {dailyWage}");
+                        break;
                 }
             }
             else
