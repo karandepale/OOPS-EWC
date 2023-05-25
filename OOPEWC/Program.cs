@@ -1,16 +1,37 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OOPEWC
 {
+    internal class Employee
+    {
+        private bool isPresent;
+
+        public Employee()
+        {
+            Random random = new Random();
+            isPresent = random.Next(0, 2) == 0 ? false : true;
+        }
+
+        public bool IsPresent()
+        {
+            return isPresent;
+        }
+    }
+
     internal class Program
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Welcome to Employee Wage Computation Program using Object oriented programming");
+            Employee employee = new Employee();
+
+            if (employee.IsPresent())
+            {
+                Console.WriteLine("Employee is Present");
+            }
+            else
+            {
+                Console.WriteLine("Employee is Absent");
+            }
         }
     }
 }
