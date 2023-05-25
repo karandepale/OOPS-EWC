@@ -46,18 +46,21 @@ namespace OOPEWC
             }
         }
 
-        public int CalculateMonthlyWage()
+        public int CalculateMonthlyWage(int totalWorkingHours, int totalWorkingDays)
         {
             int monthlyWage = 0;
-            int workingDays = 0;
+            int workingHoursCounter = 0;
+            int workingDaysCounter = 0;
 
-            for (int day = 1; day <= 20; day++)
+            while (workingHoursCounter < totalWorkingHours && workingDaysCounter < totalWorkingDays)
             {
                 Employee employee = new Employee();
                 if (employee.IsPresent())
                 {
-                    workingDays++;
-                    monthlyWage += employee.CalculateDailyWage();
+                    workingDaysCounter++;
+                    int dailyWage = employee.CalculateDailyWage();
+                    monthlyWage += dailyWage;
+                    workingHoursCounter += employee.workingHours;
                 }
             }
 
@@ -86,7 +89,9 @@ namespace OOPEWC
                         break;
                 }
 
-                int monthlyWage = employee.CalculateMonthlyWage();
+                int totalWorkingHours = 100; // Set the total working hours for the month
+                int totalWorkingDays = 20; // Set the total working days for the month
+                int monthlyWage = employee.CalculateMonthlyWage(totalWorkingHours, totalWorkingDays);
                 Console.WriteLine($"Monthly Wage: {monthlyWage}");
             }
             else
