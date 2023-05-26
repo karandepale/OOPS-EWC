@@ -9,13 +9,12 @@ namespace OOPEWC
         private int wagePerHour;
         private int workingHours;
 
-        public Employee()
+        public Employee(bool isPresent, bool isPartTime, int wagePerHour, int workingHours)
         {
-            Random random = new Random();
-            isPresent = random.Next(0, 2) == 0 ? false : true;
-            isPartTime = random.Next(0, 2) == 0 ? false : true;
-            wagePerHour = 10; // Assuming the wage per hour is $10
-            workingHours = CalculateWorkingHours(isPartTime, random);
+            this.isPresent = isPresent;
+            this.isPartTime = isPartTime;
+            this.wagePerHour = wagePerHour;
+            this.workingHours = workingHours;
         }
 
         public bool IsPresent()
@@ -33,20 +32,7 @@ namespace OOPEWC
             return wagePerHour * workingHours;
         }
 
-        private int CalculateWorkingHours(bool isPartTime, Random random)
-        {
-            switch (isPartTime)
-            {
-                case true:
-                    return 8; // Assuming part-time hours are 8
-                case false when isPresent:
-                    return random.Next(1, 9); // If full-time, generate a random working hour between 1 and 8
-                default:
-                    return 0; // Absent, no working hours
-            }
-        }
-
-        public static int CalculateMonthlyWage(int totalWorkingHours, int totalWorkingDays)
+        public static int CalculateMonthlyWage(int totalWorkingHours, int totalWorkingDays, int wagePerHour, int workingHours)
         {
             int monthlyWage = 0;
             int workingHoursCounter = 0;
@@ -54,7 +40,7 @@ namespace OOPEWC
 
             while (workingHoursCounter < totalWorkingHours && workingDaysCounter < totalWorkingDays)
             {
-                Employee employee = new Employee();
+                Employee employee = new Employee(true, false, wagePerHour, workingHours);
                 if (employee.IsPresent())
                 {
                     workingDaysCounter++;
@@ -68,11 +54,51 @@ namespace OOPEWC
         }
     }
 
+    internal class Company
+    {
+        private string name;
+        private int wagePerHour;
+        private int workingHoursPerMonth;
+        private int workingDaysPerMonth;
+
+        public Company(string name, int wagePerHour, int workingHoursPerMonth, int workingDaysPerMonth)
+        {
+            this.name = name;
+            this.wagePerHour = wagePerHour;
+            this.workingHoursPerMonth = workingHoursPerMonth;
+            this.workingDaysPerMonth = workingDaysPerMonth;
+        }
+
+        public string GetName()
+        {
+            return name;
+        }
+
+        public int GetWagePerHour()
+        {
+            return wagePerHour;
+        }
+
+        public int GetWorkingHoursPerMonth()
+        {
+            return workingHoursPerMonth;
+        }
+
+        public int GetWorkingDaysPerMonth()
+        {
+            return workingDaysPerMonth;
+        }
+    }
+
     internal class Program
     {
         static void Main(string[] args)
         {
-            Employee employee = new Employee();
+            // Create instances of companies
+            Company company1 = new Company("Company 1", 10, 160, 20); // Assuming 160 working hours per month (8 hours per day, 20 days per month)
+            Company company2 = new Company("Company 2", 12, 180, 22); // Assuming 180 working hours per month (9 hours per day, 20 days per month)
+
+            Employee employee = new Employee(true, false, company1.GetWagePerHour(), company1.GetWorkingHoursPerMonth());
 
             if (employee.IsPresent())
             {
@@ -89,10 +115,15 @@ namespace OOPEWC
                         break;
                 }
 
-                int totalWorkingHours = 100; // Set the total working hours for the month
-                int totalWorkingDays = 20; // Set the total working days for the month
-                int monthlyWage = Employee.CalculateMonthlyWage(totalWorkingHours, totalWorkingDays);
-                Console.WriteLine($"Monthly Wage: {monthlyWage}");
+                int totalWorkingHours = company1.GetWorkingHoursPerMonth();
+                int totalWorkingDays = company1.GetWorkingDaysPerMonth();
+                int monthlyWage = Employee.CalculateMonthlyWage(totalWorkingHours, totalWorkingDays, company1.GetWagePerHour(), company1.GetWorkingHoursPerMonth());
+                Console.WriteLine($"Monthly Wage for {company1.GetName()}: {monthlyWage}");
+
+                totalWorkingHours = company2.GetWorkingHoursPerMonth();
+                totalWorkingDays = company2.GetWorkingDaysPerMonth();
+                monthlyWage = Employee.CalculateMonthlyWage(totalWorkingHours, totalWorkingDays, company2.GetWagePerHour(), company2.GetWorkingHoursPerMonth());
+                Console.WriteLine($"Monthly Wage for {company2.GetName()}: {monthlyWage}");
             }
             else
             {
