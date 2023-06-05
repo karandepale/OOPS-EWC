@@ -16,6 +16,7 @@ namespace EmployeeWageCalculator
         private int wagePerHour;
         private int workingHours;
         private int totalWage;
+        private List<int> dailyWages;
 
         public Employee(bool isPresent, bool isPartTime, int wagePerHour, int workingHours)
         {
@@ -24,6 +25,7 @@ namespace EmployeeWageCalculator
             this.wagePerHour = wagePerHour;
             this.workingHours = workingHours;
             this.totalWage = 0;
+            this.dailyWages = new List<int>();
         }
 
         public bool IsPresent()
@@ -38,7 +40,9 @@ namespace EmployeeWageCalculator
 
         public int CalculateDailyWage()
         {
-            return wagePerHour * workingHours;
+            int dailyWage = wagePerHour * workingHours;
+            dailyWages.Add(dailyWage);
+            return dailyWage;
         }
 
         public void CalculateMonthlyWage(int totalWorkingHours, int totalWorkingDays)
@@ -61,6 +65,11 @@ namespace EmployeeWageCalculator
         public int GetTotalWage()
         {
             return totalWage;
+        }
+
+        public List<int> GetDailyWages()
+        {
+            return dailyWages;
         }
     }
 
@@ -138,6 +147,13 @@ namespace EmployeeWageCalculator
                     employee.CalculateMonthlyWage(company.GetWorkingHoursPerMonth(), company.GetWorkingDaysPerMonth());
                     int monthlyWage = employee.GetTotalWage();
                     Console.WriteLine($"Monthly Wage for {company.GetName()}: {monthlyWage}");
+
+                    List<int> dailyWages = employee.GetDailyWages();
+                    Console.WriteLine("Daily Wages:");
+                    foreach (var wage in dailyWages)
+                    {
+                        Console.WriteLine(wage);
+                    }
                 }
                 else
                 {
