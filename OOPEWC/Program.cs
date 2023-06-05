@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace EmployeeWageCalculator
 {
@@ -101,33 +102,23 @@ namespace EmployeeWageCalculator
 
     internal class EmpWageBuilder : IComputeWage
     {
-        private CompanyEmpWage[] companies;
-        private int companyCount;
+        private List<CompanyEmpWage> companies;
 
         public EmpWageBuilder()
         {
-            companies = new CompanyEmpWage[2]; // Assuming 2 companies for demonstration
-            companyCount = 0;
+            companies = new List<CompanyEmpWage>();
         }
 
         public void AddCompany(string name, int wagePerHour, int workingHoursPerMonth, int workingDaysPerMonth)
         {
-            if (companyCount < companies.Length)
-            {
-                companies[companyCount] = new CompanyEmpWage(name, wagePerHour, workingHoursPerMonth, workingDaysPerMonth);
-                companyCount++;
-            }
-            else
-            {
-                Console.WriteLine("Reached maximum limit of companies.");
-            }
+            companies.Add(new CompanyEmpWage(name, wagePerHour, workingHoursPerMonth, workingDaysPerMonth));
         }
 
         public void CalculateWages()
         {
-            for (int i = 0; i < companyCount; i++)
+            foreach (var company in companies)
             {
-                Employee employee = new Employee(true, false, companies[i].GetWagePerHour(), companies[i].GetWorkingHoursPerMonth());
+                Employee employee = new Employee(true, false, company.GetWagePerHour(), company.GetWorkingHoursPerMonth());
 
                 if (employee.IsPresent())
                 {
@@ -144,9 +135,9 @@ namespace EmployeeWageCalculator
                             break;
                     }
 
-                    employee.CalculateMonthlyWage(companies[i].GetWorkingHoursPerMonth(), companies[i].GetWorkingDaysPerMonth());
+                    employee.CalculateMonthlyWage(company.GetWorkingHoursPerMonth(), company.GetWorkingDaysPerMonth());
                     int monthlyWage = employee.GetTotalWage();
-                    Console.WriteLine($"Monthly Wage for {companies[i].GetName()}: {monthlyWage}");
+                    Console.WriteLine($"Monthly Wage for {company.GetName()}: {monthlyWage}");
                 }
                 else
                 {
