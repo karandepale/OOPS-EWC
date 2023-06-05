@@ -7,6 +7,7 @@ namespace EmployeeWageCalculator
     {
         void AddCompany(string name, int wagePerHour, int workingHoursPerMonth, int workingDaysPerMonth);
         void CalculateWages();
+        int GetTotalWageByCompany(string companyName);
     }
 
     internal class Employee
@@ -161,6 +162,20 @@ namespace EmployeeWageCalculator
                 }
             }
         }
+
+        public int GetTotalWageByCompany(string companyName)
+        {
+            foreach (var company in companies)
+            {
+                if (company.GetName() == companyName)
+                {
+                    Employee employee = new Employee(true, false, company.GetWagePerHour(), company.GetWorkingHoursPerMonth());
+                    employee.CalculateMonthlyWage(company.GetWorkingHoursPerMonth(), company.GetWorkingDaysPerMonth());
+                    return employee.GetTotalWage();
+                }
+            }
+            return 0;
+        }
     }
 
     internal class Program
@@ -175,6 +190,11 @@ namespace EmployeeWageCalculator
 
             // Calculate wages for all companies
             empWageBuilder.CalculateWages();
+
+            // Get total wage by company
+            string companyName = "Company 1";
+            int totalWage = empWageBuilder.GetTotalWageByCompany(companyName);
+            Console.WriteLine($"Total wage for {companyName}: {totalWage}");
         }
     }
 }
