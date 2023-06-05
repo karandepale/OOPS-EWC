@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace OOPEWC
+namespace EmployeeWageCalculator
 {
     internal class Employee
     {
@@ -8,6 +8,7 @@ namespace OOPEWC
         private bool isPartTime;
         private int wagePerHour;
         private int workingHours;
+        private int totalWage;
 
         public Employee(bool isPresent, bool isPartTime, int wagePerHour, int workingHours)
         {
@@ -15,6 +16,7 @@ namespace OOPEWC
             this.isPartTime = isPartTime;
             this.wagePerHour = wagePerHour;
             this.workingHours = workingHours;
+            this.totalWage = 0;
         }
 
         public bool IsPresent()
@@ -32,25 +34,26 @@ namespace OOPEWC
             return wagePerHour * workingHours;
         }
 
-        public static int CalculateMonthlyWage(int totalWorkingHours, int totalWorkingDays, int wagePerHour, int workingHours)
+        public void CalculateMonthlyWage(int totalWorkingHours, int totalWorkingDays)
         {
-            int monthlyWage = 0;
             int workingHoursCounter = 0;
             int workingDaysCounter = 0;
 
             while (workingHoursCounter < totalWorkingHours && workingDaysCounter < totalWorkingDays)
             {
-                Employee employee = new Employee(true, false, wagePerHour, workingHours);
-                if (employee.IsPresent())
+                if (IsPresent())
                 {
                     workingDaysCounter++;
-                    int dailyWage = employee.CalculateDailyWage();
-                    monthlyWage += dailyWage;
-                    workingHoursCounter += employee.workingHours;
+                    int dailyWage = CalculateDailyWage();
+                    totalWage += dailyWage;
+                    workingHoursCounter += workingHours;
                 }
             }
+        }
 
-            return monthlyWage;
+        public int GetTotalWage()
+        {
+            return totalWage;
         }
     }
 
@@ -95,8 +98,8 @@ namespace OOPEWC
         static void Main(string[] args)
         {
             // Create instances of companies
-            Company company1 = new Company("Company 1", 10, 160, 20); // Assuming 160 working hours per month (8 hours per day, 20 days per month)
-            Company company2 = new Company("Company 2", 12, 180, 22); // Assuming 180 working hours per month (9 hours per day, 20 days per month)
+            Company company1 = new Company("Company 1", 10, 160, 20);
+            Company company2 = new Company("Company 2", 12, 180, 22);
 
             Employee employee = new Employee(true, false, company1.GetWagePerHour(), company1.GetWorkingHoursPerMonth());
 
@@ -115,14 +118,12 @@ namespace OOPEWC
                         break;
                 }
 
-                int totalWorkingHours = company1.GetWorkingHoursPerMonth();
-                int totalWorkingDays = company1.GetWorkingDaysPerMonth();
-                int monthlyWage = Employee.CalculateMonthlyWage(totalWorkingHours, totalWorkingDays, company1.GetWagePerHour(), company1.GetWorkingHoursPerMonth());
+                employee.CalculateMonthlyWage(company1.GetWorkingHoursPerMonth(), company1.GetWorkingDaysPerMonth());
+                int monthlyWage = employee.GetTotalWage();
                 Console.WriteLine($"Monthly Wage for {company1.GetName()}: {monthlyWage}");
 
-                totalWorkingHours = company2.GetWorkingHoursPerMonth();
-                totalWorkingDays = company2.GetWorkingDaysPerMonth();
-                monthlyWage = Employee.CalculateMonthlyWage(totalWorkingHours, totalWorkingDays, company2.GetWagePerHour(), company2.GetWorkingHoursPerMonth());
+                employee.CalculateMonthlyWage(company2.GetWorkingHoursPerMonth(), company2.GetWorkingDaysPerMonth());
+                monthlyWage = employee.GetTotalWage();
                 Console.WriteLine($"Monthly Wage for {company2.GetName()}: {monthlyWage}");
             }
             else
