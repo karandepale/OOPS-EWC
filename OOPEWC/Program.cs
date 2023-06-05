@@ -57,14 +57,14 @@ namespace EmployeeWageCalculator
         }
     }
 
-    internal class Company
+    internal class CompanyEmpWage
     {
         private string name;
         private int wagePerHour;
         private int workingHoursPerMonth;
         private int workingDaysPerMonth;
 
-        public Company(string name, int wagePerHour, int workingHoursPerMonth, int workingDaysPerMonth)
+        public CompanyEmpWage(string name, int wagePerHour, int workingHoursPerMonth, int workingDaysPerMonth)
         {
             this.name = name;
             this.wagePerHour = wagePerHour;
@@ -93,43 +93,75 @@ namespace EmployeeWageCalculator
         }
     }
 
+    internal class EmpWageBuilder
+    {
+        private CompanyEmpWage[] companies;
+
+        public EmpWageBuilder()
+        {
+            companies = new CompanyEmpWage[2]; // Assuming 2 companies for demonstration
+        }
+
+        public void AddCompany(string name, int wagePerHour, int workingHoursPerMonth, int workingDaysPerMonth)
+        {
+            for (int i = 0; i < companies.Length; i++)
+            {
+                if (companies[i] == null)
+                {
+                    companies[i] = new CompanyEmpWage(name, wagePerHour, workingHoursPerMonth, workingDaysPerMonth);
+                    break;
+                }
+            }
+        }
+
+        public void CalculateWages()
+        {
+            for (int i = 0; i < companies.Length; i++)
+            {
+                if (companies[i] != null)
+                {
+                    Employee employee = new Employee(true, false, companies[i].GetWagePerHour(), companies[i].GetWorkingHoursPerMonth());
+
+                    if (employee.IsPresent())
+                    {
+                        int dailyWage = employee.CalculateDailyWage();
+                        Console.WriteLine("Employee is Present.");
+
+                        switch (employee.IsPartTime())
+                        {
+                            case true:
+                                Console.WriteLine($"Part-Time Employee. Daily Wage: {dailyWage}");
+                                break;
+                            case false:
+                                Console.WriteLine($"Full-Time Employee. Daily Wage: {dailyWage}");
+                                break;
+                        }
+
+                        employee.CalculateMonthlyWage(companies[i].GetWorkingHoursPerMonth(), companies[i].GetWorkingDaysPerMonth());
+                        int monthlyWage = employee.GetTotalWage();
+                        Console.WriteLine($"Monthly Wage for {companies[i].GetName()}: {monthlyWage}");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Employee is Absent");
+                    }
+                }
+            }
+        }
+    }
+
     internal class Program
     {
         static void Main(string[] args)
         {
-            // Create instances of companies
-            Company company1 = new Company("Company 1", 10, 160, 20);
-            Company company2 = new Company("Company 2", 12, 180, 22);
+            EmpWageBuilder empWageBuilder = new EmpWageBuilder();
 
-            Employee employee = new Employee(true, false, company1.GetWagePerHour(), company1.GetWorkingHoursPerMonth());
+            // Add companies
+            empWageBuilder.AddCompany("Company 1", 10, 160, 20); // Assuming 160 working hours per month (8 hours per day, 20 days per month)
+            empWageBuilder.AddCompany("Company 2", 12, 180, 22); // Assuming 180 working hours per month (9 hours per day, 20 days per month)
 
-            if (employee.IsPresent())
-            {
-                int dailyWage = employee.CalculateDailyWage();
-                Console.WriteLine("Employee is Present.");
-
-                switch (employee.IsPartTime())
-                {
-                    case true:
-                        Console.WriteLine($"Part-Time Employee. Daily Wage: {dailyWage}");
-                        break;
-                    case false:
-                        Console.WriteLine($"Full-Time Employee. Daily Wage: {dailyWage}");
-                        break;
-                }
-
-                employee.CalculateMonthlyWage(company1.GetWorkingHoursPerMonth(), company1.GetWorkingDaysPerMonth());
-                int monthlyWage = employee.GetTotalWage();
-                Console.WriteLine($"Monthly Wage for {company1.GetName()}: {monthlyWage}");
-
-                employee.CalculateMonthlyWage(company2.GetWorkingHoursPerMonth(), company2.GetWorkingDaysPerMonth());
-                monthlyWage = employee.GetTotalWage();
-                Console.WriteLine($"Monthly Wage for {company2.GetName()}: {monthlyWage}");
-            }
-            else
-            {
-                Console.WriteLine("Employee is Absent");
-            }
+            // Calculate wages for all companies
+            empWageBuilder.CalculateWages();
         }
     }
 }
