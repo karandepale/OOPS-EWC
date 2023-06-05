@@ -2,6 +2,12 @@
 
 namespace EmployeeWageCalculator
 {
+    internal interface IComputeWage
+    {
+        void AddCompany(string name, int wagePerHour, int workingHoursPerMonth, int workingDaysPerMonth);
+        void CalculateWages();
+    }
+
     internal class Employee
     {
         private bool isPresent;
@@ -93,58 +99,58 @@ namespace EmployeeWageCalculator
         }
     }
 
-    internal class EmpWageBuilder
+    internal class EmpWageBuilder : IComputeWage
     {
         private CompanyEmpWage[] companies;
+        private int companyCount;
 
         public EmpWageBuilder()
         {
             companies = new CompanyEmpWage[2]; // Assuming 2 companies for demonstration
+            companyCount = 0;
         }
 
         public void AddCompany(string name, int wagePerHour, int workingHoursPerMonth, int workingDaysPerMonth)
         {
-            for (int i = 0; i < companies.Length; i++)
+            if (companyCount < companies.Length)
             {
-                if (companies[i] == null)
-                {
-                    companies[i] = new CompanyEmpWage(name, wagePerHour, workingHoursPerMonth, workingDaysPerMonth);
-                    break;
-                }
+                companies[companyCount] = new CompanyEmpWage(name, wagePerHour, workingHoursPerMonth, workingDaysPerMonth);
+                companyCount++;
+            }
+            else
+            {
+                Console.WriteLine("Reached maximum limit of companies.");
             }
         }
 
         public void CalculateWages()
         {
-            for (int i = 0; i < companies.Length; i++)
+            for (int i = 0; i < companyCount; i++)
             {
-                if (companies[i] != null)
+                Employee employee = new Employee(true, false, companies[i].GetWagePerHour(), companies[i].GetWorkingHoursPerMonth());
+
+                if (employee.IsPresent())
                 {
-                    Employee employee = new Employee(true, false, companies[i].GetWagePerHour(), companies[i].GetWorkingHoursPerMonth());
+                    int dailyWage = employee.CalculateDailyWage();
+                    Console.WriteLine("Employee is Present.");
 
-                    if (employee.IsPresent())
+                    switch (employee.IsPartTime())
                     {
-                        int dailyWage = employee.CalculateDailyWage();
-                        Console.WriteLine("Employee is Present.");
-
-                        switch (employee.IsPartTime())
-                        {
-                            case true:
-                                Console.WriteLine($"Part-Time Employee. Daily Wage: {dailyWage}");
-                                break;
-                            case false:
-                                Console.WriteLine($"Full-Time Employee. Daily Wage: {dailyWage}");
-                                break;
-                        }
-
-                        employee.CalculateMonthlyWage(companies[i].GetWorkingHoursPerMonth(), companies[i].GetWorkingDaysPerMonth());
-                        int monthlyWage = employee.GetTotalWage();
-                        Console.WriteLine($"Monthly Wage for {companies[i].GetName()}: {monthlyWage}");
+                        case true:
+                            Console.WriteLine($"Part-Time Employee. Daily Wage: {dailyWage}");
+                            break;
+                        case false:
+                            Console.WriteLine($"Full-Time Employee. Daily Wage: {dailyWage}");
+                            break;
                     }
-                    else
-                    {
-                        Console.WriteLine("Employee is Absent");
-                    }
+
+                    employee.CalculateMonthlyWage(companies[i].GetWorkingHoursPerMonth(), companies[i].GetWorkingDaysPerMonth());
+                    int monthlyWage = employee.GetTotalWage();
+                    Console.WriteLine($"Monthly Wage for {companies[i].GetName()}: {monthlyWage}");
+                }
+                else
+                {
+                    Console.WriteLine("Employee is Absent");
                 }
             }
         }
@@ -154,7 +160,7 @@ namespace EmployeeWageCalculator
     {
         static void Main(string[] args)
         {
-            EmpWageBuilder empWageBuilder = new EmpWageBuilder();
+            IComputeWage empWageBuilder = new EmpWageBuilder();
 
             // Add companies
             empWageBuilder.AddCompany("Company 1", 10, 160, 20); // Assuming 160 working hours per month (8 hours per day, 20 days per month)
